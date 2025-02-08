@@ -145,6 +145,7 @@ function App() {
           <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer">
             Read more
           </a>
+          <center>
           <div className="engagement-box">
             <center>
               <div className="agreement-box">
@@ -170,13 +171,15 @@ function App() {
               ))}
             </div>
             {!agreementSent && <textarea
+              className="styled-textarea"
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Respond freely here!..."
             ></textarea>}
-            {!agreementSent && <button onClick={handleSend}>Send Thoughts!</button>}
+            {!agreementSent && <button className="button-2" onClick={handleSend}>Send Thoughts!</button>}
             <div ref={chatEnd} />
           </div>
+          </center>
         </div>
       )}
     </div>
