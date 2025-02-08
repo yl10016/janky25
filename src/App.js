@@ -46,6 +46,8 @@ function App() {
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
   const [responses, setResponses] = useState([]);
+  
+  const chatEnd = React.useRef(null);
 
   React.useEffect(() => {
     const unattacher = onSnapshot(responsesCollection, function(snapshot){
@@ -73,6 +75,10 @@ function App() {
       'comment': userInput
     })
   }, [userInput])
+
+  React.useEffect(() => {
+    chatEnd.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages])
 
   const handleSend = () => {
     if (!userInput.trim()) return;
@@ -128,6 +134,7 @@ function App() {
               placeholder="Respond freely here!..."
             ></textarea>
             <button onClick={handleSend}>Send</button>
+            <div ref={chatEnd} />
           </div>
         </div>
       )}
