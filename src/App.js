@@ -43,10 +43,12 @@ const hardcodedResponses = [
 function App() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [response, setResponses] = useState("");
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
-  const [agreementSent, setAgreementSent] = useState(false)
+  const [responses, setResponses] = useState([]);
+  const [agreementSent, setAgreementSent] = useState(false);
+  
+  const chatEnd = React.useRef(null);
 
   React.useEffect(() => {
     const unattacher = onSnapshot(responsesCollection, function(snapshot){
@@ -75,9 +77,9 @@ function App() {
     })
   }, [userInput])
 
-  const handleSendAgreement = () => {
-    setAgreementSent(true);
-  };
+  React.useEffect(() => {
+    chatEnd.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages])
 
   const handleSend = () => {
     if (!userInput.trim()) return;
@@ -87,6 +89,10 @@ function App() {
     
     setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
     setUserInput("");
+  };
+
+  const handleSendAgreement = () => {
+    setAgreementSent(true);
   };
 
   return (
@@ -112,19 +118,22 @@ function App() {
             Read more
           </a>
           <div className="engagement-box">
-            <label>Agreement Level: {agreement}%</label>
-            <input
-              type="range"
-              min="0"
-              max="100"
-              value={agreement}
-              onChange={(e) => setAgreement(e.target.value)}
-              disabled={agreementSent}
-            />
-            <button onClick={handleSendAgreement} disabled={agreementSent}>Send Agreement Level</button>
-            {agreementSent && <p>Your agreement level: {agreement}%</p>}
+            <div className="agreement-slider">
+              <label>Agreement Level: {agreement}%</label>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                value={agreement}
+                onChange={(e) => setAgreement(e.target.value)}
+                className="styled-slider"
+                disabled={agreementSent}
+              />
+              <button onClick={handleSendAgreement} disabled={agreementSent}>Send Agreement Level</button>
+              {agreementSent && <p>Your agreement level: {agreement}%</p>}
+            </div>
             <div className="chat-thread">
-              {messages.map((msg, index) => (!agreementSent &&
+              {messages.map((msg, index) => (
                 <div key={index} className={`message ${msg.sender}`}>
                   {msg.text}
                 </div>
@@ -134,9 +143,9 @@ function App() {
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Respond freely here!..."
-              style={{ width: "100%" }}
             ></textarea>}
             {!agreementSent && <button onClick={handleSend}>Send Thoughts!</button>}
+            <div ref={chatEnd} />
           </div>
         </div>
       )}
