@@ -1,0 +1,38 @@
+.container {
+    max-width: 600px;
+    margin: auto;
+    text-align: center;
+  }
+  
+  .news-list {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .news-item {
+    background: #f0f0f0;
+    border: none;
+    padding: 10px;
+    margin: 5px;
+    cursor: pointer;
+  }
+  
+  .news-summary {
+    margin-top: 20px;
+  }
+  
+  .engagement-box {
+    margin-top: 10px;
+  }
+  
+  textarea {
+    width: 100%;
+    height: 80px;
+    margin-top: 10px;
+  }
+  
+  .response {
+    font-weight: bold;
+    color: green;
+  }
+  
