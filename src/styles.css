@@ -1,7 +1,18 @@
 .container {
   max-width: 1200px;
-  margin: auto;
+  margin: 0;
+  justify-content: center;
+  align-items: center;
   text-align: center;
+  padding-top: 50vh;
+  text-align: center;
+  transform: translateY(-20%);
+}
+
+.title{
+  font-size: 3rem;
+  margin: 0;
+  white-space: nowrap;
 }
 
 .news-list {
@@ -112,7 +123,7 @@ textarea {
 }
 
 .engagement-box {
-  margin-top: 10px;
+  margin-top: 25px;
 }
 
 textarea {
@@ -134,7 +145,7 @@ textarea {
   border: solid 2px #3e4a90;
   border-radius: 5px;
   padding: 10px;
-  width: 50%;
+  width: 80%;
 }
 .styled-slider {
   -webkit-appearance: none;
@@ -160,6 +171,29 @@ textarea {
   border-radius: 5px;
   background-color: #45376f;
   color: white;
-  font-size: 1rem;
+  font-size: 0.9rem;
   border: none;
+}
+.button-2 {
+  margin: 10px;
+  padding: 10px 20px;
+  border-radius: 5px;
+  background-color: #45376f;
+  color: white;
+  font-size: 0.9rem;
+  border: none;
+}
+.engagement-box{
+  width: 70%;
+}
+
+.styled-textarea {
+  width: 100%;
+  padding: 10px;
+  font-size: 16px;
+  border: 2px solid #916591;
+  border-radius: 10px;
+  outline: none;
+  resize: vertical;
+  background-color: #f8f8f8;
 }
