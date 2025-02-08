@@ -1,7 +1,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, #00aaff 40%, #003366 80%);
+  background: linear-gradient(to top, rgb(144, 196, 221) 40%, #b9d3ed 70%);
   display: flex;
   flex-direction: column;
 }
@@ -18,135 +18,200 @@ body {
   gap: 10px;
   padding: 10px;
   margin: auto;
-}
-
-.message {
+  /* margin: 60px; */
+ }
+ 
+ 
+ .message {
   padding: 10px;
   border-radius: 10px;
   max-width: 60%;
   word-wrap: break-word;
-}
-
-.user {
+ }
+ 
+ 
+ .user {
   background-color: #916591;
   color: white;
   align-self: flex-end;
-}
-
-.bot {
+ }
+ 
+ 
+ .bot {
   background-color: #3e4a90;
   color: white;
   align-self: flex-start;
-}
-
-.container {
+ }
+ 
+ 
+ .container {
   max-width: 1200px;
   margin: auto;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding-top: 50vh;
-  transform: translateY(-20%);
-}
-
-.news-list {
+  transform: translateY(-8%);
+ }
+ 
+ 
+ .title{
+  font-size: 3rem;
+  margin: 0;
+  white-space: nowrap;
+ }
+ 
+ 
+ .news-topic {
+  font-size: 2rem;
+  margin-top: 160px;
+  margin-bottom: 120px;
+ }
+ 
+ 
+ .news-list {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
   gap: 20px;
-  width: 100%;
-}
-
-.news-item {
-  width: 30%; /* Adjust this value to change the width of the news box */
-  height: 250px; /* Adjust the height of the news box */
+  width: 90%;
+  }
+ 
+ 
+ .news-item {
+  width: 27%; /* Adjust this value to change the width of the news box */
+  height: 270px; /* Adjust the height of the news box */
   text-align: center;
-  padding: 10px;
+  padding: 25px;
+  padding-left: 40px;
+  padding-right: 40px;
   border: 1px solid #ccc; /* Optional: border for clarity */
   border-radius: 8px;
   background-color: #f9f9f9;
   box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-}
+ }
+ 
+ .news-item-1 {
+  width: 50%; /* Adjust this value to change the width of the news box */
+  height: 270px; /* Adjust the height of the news box */
+  text-align: center;
+  padding: 25px;
+  padding-left: 40px;
+  padding-right: 40px;
+  border: 1px solid #ccc; /* Optional: border for clarity */
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+ }
 
-.news-image {
+ .news-image {
   width: 100%; /* Ensures the image fills the news box */
   height: 150px; /* Adjust the height as needed */
   object-fit: cover;
-  border-radius: 8px;
-}  
-
-.news-summary {
   margin-top: 20px;
-}
-
-.engagement-box {
-  margin-top: 25px;
-}
-
-textarea {
+  border-radius: 8px;
+ } 
+ 
+ 
+ .articles{
+  margin: auto;
+  padding: 40px;
+  padding-top: 50px;
+  padding-bottom: 50px;
+  background-color:#f9f9f9;
+  border-radius: 60px;
+ }
+ 
+ 
+ .article-summary{
+  font-size: 1.1rem;
+  margin: auto;
+  margin-top: 50px;
+  width: 75%;
+ }
+ 
+ 
+ .news-summary { /*agreement and engagement?*/
+  margin: auto;
+  margin-top: 40px;
+  }
+ 
+ 
+ textarea {
   width: 100%;
   height: 80px;
   margin-top: 10px;
-}
-
-.response {
+ }
+ 
+ 
+ .response {
   font-weight: bold;
   color: green;
-}
-.agreement-box{
+ }
+ .agreement-box{
+  font-size: 1.5rem;
   display: flex;
   margin-top: 10px;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
-  background-color: #d5d9f3;
+  gap: 20px;
+  /* background-color: #d5d9f3;
   border: solid 2px #3e4a90;
-  border-radius: 5px;
-  padding: 10px;
-  width: 80%;
-}
-.styled-slider {
+  border-radius: 5px; */
+  /* padding: 10px; */
+  /* width: 80%; */
+ }
+ .styled-slider {
   -webkit-appearance: none;
-  width: 50%;
-  height: 10px;
-  border-radius: 5px;
+  width: 80%;
+  height: 30px;
+  border-radius: 100px;
+  /* border-color: #916591; */
   background: linear-gradient(90deg, #36549a 0%, #2f4392 50%, #2a328a 100%);
   outline: none;
   opacity: 0.9;
   transition: opacity 0.2s;
-}
-
-.styled-slider:hover {
+ }
+ 
+ 
+ .styled-slider:hover {
   opacity: 1;
-}
-
-.bold{
+ }
+ 
+ 
+ .bold{
   color: #2d377f;
   font-weight: bolder;
-}
-.button {
-  padding: 5px 10px;
+ }
+ .button {
+  padding: 10px;
   border-radius: 5px;
   background-color: #45376f;
   color: white;
-  font-size: 0.9rem;
+  font-size: 1.2rem;
+  width: 10%;
   border: none;
-}
-.button-2 {
+ }
+ .button-2 {
   margin: 10px;
+  margin-bottom: 30px;
   padding: 10px 20px;
   border-radius: 5px;
   background-color: #45376f;
   color: white;
   font-size: 0.9rem;
   border: none;
-}
-.engagement-box{
+ }
+ 
+ 
+ .engagement-box{
   margin: auto;
   width: 70%;
-}
-
-.styled-textarea {
+  margin-top: 60px;
+ }
+ 
+ 
+ .styled-textarea {
   width: 100%;
   padding: 10px;
   font-size: 16px;
@@ -155,4 +220,8 @@ textarea {
   outline: none;
   resize: vertical;
   background-color: #f8f8f8;
-}
+ }
+ 
+ 
+ 
+ 
