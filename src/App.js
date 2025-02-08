@@ -27,14 +27,18 @@ const hardcodedResponses = [
 
 function App() {
   const [selectedArticle, setSelectedArticle] = useState(null);
+  const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
-  const [response, setResponse] = useState("");
   const [agreement, setAgreement] = useState(50);
 
   const handleSend = () => {
+    if (!userInput.trim()) return;
+    
     const randomResponse =
       hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
-    setResponse(randomResponse);
+    
+    setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
+    setUserInput("");
   };
 
   return (
@@ -63,13 +67,17 @@ function App() {
               value={agreement}
               onChange={(e) => setAgreement(e.target.value)}
             />
+            <div className="chat-thread">
+              {messages.map((msg, index) => (
+                <p key={index} className={msg.sender}>{msg.text}</p>
+              ))}
+            </div>
             <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Share your thoughts..."
             ></textarea>
             <button onClick={handleSend}>Send</button>
-            {response && <p className="response">{response}</p>}
           </div>
         </div>
       )}
