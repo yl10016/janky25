@@ -123,7 +123,9 @@ function App() {
 
   return (
     <div className="container">
-      <h1>Today's News</h1>
+      <div className="title">
+        <h1>Today's Ebb Tide is...</h1>
+      </div>
       <div className="news-topic">
         <h2>{newsTopic.title}</h2>
         <p>{newsTopic.description}</p>
