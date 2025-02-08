@@ -66,13 +66,13 @@ textarea {
 .user {
   background-color: #916591;
   color: white;
-  align-self: flex-start;
+  align-self: flex-end;
 }
 
 .bot {
   background-color: #3e4a90;
   color: white;
-  align-self: flex-end;
+  align-self: flex-start;
 }
 
 .container {
@@ -124,4 +124,42 @@ textarea {
 .response {
   font-weight: bold;
   color: green;
+}
+.agreement-box{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  background-color: #d5d9f3;
+  border: solid 2px #3e4a90;
+  border-radius: 5px;
+  padding: 10px;
+  width: 50%;
+}
+.styled-slider {
+  -webkit-appearance: none;
+  width: 50%;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(90deg, #36549a 0%, #2f4392 50%, #2a328a 100%);
+  outline: none;
+  opacity: 0.9;
+  transition: opacity 0.2s;
+}
+
+.styled-slider:hover {
+  opacity: 1;
+}
+
+.bold{
+  color: #2d377f;
+  font-weight: bolder;
+}
+.button {
+  padding: 5px 10px;
+  border-radius: 5px;
+  background-color: #45376f;
+  color: white;
+  font-size: 1rem;
+  border: none;
 }
