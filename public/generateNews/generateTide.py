@@ -20,23 +20,8 @@ def generate(refresh):
     
     #choose a headline
     chosenIndex = random.randint(0, len(similarHeadlines)-1)    
-    # print(similarHeadlines["left"][chosenIndex])
-    # print(similarHeadlines["right"][chosenIndex])
-    # print(similarHeadlines["mid"][chosenIndex])
-
     generateUtil.writeToCsv(similarHeadlines, chosenIndex)
 
-    # for i in range(len(similarHeadlines["left"])):
-    #     print(similarHeadlines["left"][i])
-    #     print(similarHeadlines["right"][i])
-    #     print(similarHeadlines["mid"][i])
-    #     print(similarHeadlines["similarity"][i])
-    #     print()
-
-    # print(f":{similarHeadlines["similarity"]}")
-
-
-
 # run pipeline with a call to generate
-refresh = False
-generate(refresh)
+while True:
+    generate(True)

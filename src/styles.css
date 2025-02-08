@@ -6,10 +6,21 @@ body {
   flex-direction: column;
 }
 
+@keyframes fadeIn {
+  from {
+      opacity: 0;
+  }
+  to {
+      opacity: 1;
+  }
+}
+
 .title{
   font-size: 3rem;
   margin: 0;
   white-space: nowrap;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards .1s;
 }
 
 .chat-thread {
@@ -55,19 +66,18 @@ body {
  }
  
  
- .title{
-  font-size: 3rem;
-  margin: 0;
-  white-space: nowrap;
- }
- 
- 
  .news-topic {
   font-size: 2rem;
   margin-top: 160px;
   margin-bottom: 120px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards .7s;
  }
  
+ .news {
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards 1.5s;
+ }
  
  .news-list {
   display: flex;
@@ -121,6 +131,8 @@ body {
   padding-bottom: 50px;
   background-color:#f9f9f9;
   border-radius: 60px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards 4s;
  }
  
  
@@ -209,6 +221,8 @@ body {
   margin: auto;
   width: 70%;
   margin-top: 60px;
+  opacity: 0;
+  animation: fadeIn 1s ease-in forwards .1s;
  }
  
  

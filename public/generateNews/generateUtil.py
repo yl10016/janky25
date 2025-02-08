@@ -10,17 +10,6 @@ import random
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
-# leftWingSites = [{"site": "npr", "home": "https://www.npr.org/", "htmllink": "h3", "htmlclass": "title"},
-#                  {"site": "pbs", "home": "https://www.pbs.org/newshour/", "htmllink": "h3", "htmlclass": "title"},
-#                  {"site": "bbc", "home": "https://www.bbc.com/news", "htmllink": "h3", "htmlclass": "title"}]
-# mixedSites = [{"site": "cnn", "home": "https://www.cnn.com/"},
-#               {"site": "abc", "home": "https://abcnews.go.com/"},
-#               {"site": "nbc", "home": "https://www.nbcnews.com/"}]
-# rightWingSites = [{"site": "fox", "home": "https://www.foxnews.com/"},
-#                   {"site": "glennbeck", "home": "https://www.glennbeck.com/blog/"},
-#                   {"site": "hannity", "home": "https://www.foxnews.com/category/shows/hannity"}]
-
-
 # this code visits the homepage of a few major news pages, just once each, storing a list of headlines and urls to further information
 def crawlHeadlines() : 
     #inspect html to get the htmllink and htmlclass
@@ -52,7 +41,6 @@ def crawlHeadlines() :
 
             # get headlines
             soup = BeautifulSoup(html, 'html.parser')
-            # print(soup.prettify())
             headline_text = []
             headline_link = []
 
@@ -65,21 +53,6 @@ def crawlHeadlines() :
                     # Extract the link inside the <a> tag (if it exists)
                     headline_text.append(headline.get_text().strip())
                     headline_link.append(link['href'])
-            
-            # for h3 in soup.find_all('article'):
-            #     print(h3.text, h3.get('class'))
-            
-            # links = soup.find_all(entry["htmllink"], class_=entry["htmlclass"]) #find all links
-            # # Find all headlines by searching for <h3> tags with the class "title"
-            # # print(len(links))
-            # for link in links: 
-            #     headline = link.find('a') # if <a> is contained within the <href> things instead
-
-            #     if headline: 
-            #         # Extract the link inside the <a> tag (if it exists)
-            #         headline_text.append(headline.get_text().strip())
-            #         headline_link.append(headline['href'])
-
             
             # for additional json stored in <scripts> within the html
             scripts = soup.find_all('script')
@@ -103,9 +76,6 @@ def crawlHeadlines() :
             mixedHeadlines["text"] += headline_text
             mixedHeadlines["url"] += headline_link
 
-    # print(f":{leftHeadlines["text"]}")
-    # print(f":{rightHeadlines["text"]}")
-    # print(f":{mixedHeadlines["text"]}")
     return leftHeadlines, rightHeadlines, mixedHeadlines
 
 
@@ -293,7 +263,7 @@ def writeToCsv(dictionary, idx):
     
     
     with open(fileName, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames = fieldNames, delimiter='\t') 
+        writer = csv.DictWriter(csvfile, fieldnames=fieldNames, delimiter='\t', quotechar='"')
         writer.writeheader() 
         writer.writerows(dataDictionary) 
     
@@ -303,5 +273,3 @@ def writeToCsv(dictionary, idx):
    
     with open('commonTopic.txt', 'w') as file:
         file.write(formattedString)
-
-        

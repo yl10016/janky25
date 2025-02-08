@@ -24,6 +24,8 @@ function App() {
   const [responses, setResponses] = useState([]);
   const [agreementSent, setAgreementSent] = useState(false);
   const [datasetIndex, setDatasetIndex] = useState(1);
+
+  const [seenResponses, setSeenResponses] = useState([]);
   
   const chatEnd = React.useRef(null);
 
@@ -79,16 +81,21 @@ function App() {
   const handleSend = () => {
     if (!userInput.trim()) return;
    
-    const agreementOppLo = (agreement + 50) % 100 - 10
-    const agreementOppHi = (agreement + 50) % 100 + 10
+    const agreementOppLo = agreement==50? 40: ((agreement + 50) % 100 - 10)
+    const agreementOppHi = agreement==50? 60: ((agreement + 50) % 100 + 10)
+
+
     const filteredResponses = responses.filter(obj => {
       return agreementOppLo <= obj['agreement'] && obj['agreement'] <= agreementOppHi
     })
     var randomResponse = filteredResponses[Math.floor(Math.random() * filteredResponses.length)];
-   
+    while(seenResponses.includes(randomResponse)){
+      randomResponse = filteredResponses[Math.floor(Math.random() * filteredResponses.length)];
+    }
     if(!randomResponse){
       randomResponse = hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
     }
+    setSeenResponses(prevSeenResponses => [...prevSeenResponses, randomResponse]);
 
 
     setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse['comment'], sender: "bot" }]);
@@ -144,17 +151,19 @@ function App() {
         <h2>{newsTopic.title}</h2>
         <p>{newsTopic.description}</p>
       </div>
-      <div className="news-list" style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
-        {newsArticles.map((article, index) => (
-          article['id'] == selectedArticle['id'] && <div key={index} className="news-item-1" onClick={() => setSelectedArticle(article)}>
-            <h3>{article.title}</h3>
-            <img src={article.image} alt={article.title} className="news-image" />
-          </div>
-        ))}
-      </div>
-      <a href={selectedArticle['link']} target="_blank" rel="noopener noreferrer">
-            (read more)
-          </a>
+      <div className = "news">
+       <div className="news-list" style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
+         {newsArticles.map((article, index) => (
+           article['id'] == selectedArticle['id'] && <div key={index} className="news-item-1" onClick={() => setSelectedArticle(article)}>
+             <h3>{article.title}</h3>
+             <img src={article.image} alt={article.title} className="news-image" />
+           </div>
+         ))}
+       </div>
+       <a href={selectedArticle['link']} target="_blank" rel="noopener noreferrer">
+             (read more)
+           </a>
+     </div>
       {selectedArticle && (
         <div className="news-summary">
           {/* <center> */}
