@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 import "./styles.css";
+import {
+  onSnapshot, addDoc
+} from "firebase/firestore"
+import { responsesCollection } from "./firebase"
 
 const newsTopic = {
   title: "Trade and Tariffs",
@@ -8,18 +12,21 @@ const newsTopic = {
 
 const newsArticles = [
   {
+    id: 1,
     title: "It's not over: Donald Trump could still blow up global trade",
     summary: "Ideology, complacent markets and a need for revenue may still lead to big tariffs",
     link: "https://www.economist.com/leaders/2025/02/06/its-not-over-donald-trump-could-still-blow-up-global-trade",
     image: "https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/content-assets/images/20250208_LDD002.jpg"
   },
   {
+    id: 2,
     title: "Japanese leader tries flattering Trump in bid to avert tariffs\n",
     summary: "Trump's meeting with Japan's prime minister ended with a tariff warning, but praise from the Japanese side eased tensions",
     link: "https://www.washingtonpost.com/politics/2025/02/07/trump-japan-prime-minister-meeting/",
     image: "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/72ULYKJYQO7HSKLUFQX3KPQ2PM_size-normalized.jpg"
   },
   {
+    id: 3,
     title: "Trump racks up wins on tariffs, immigration, and foreign policy",
     summary: "The 'Outnumbered' panelists discuss President Donald Trump's recent wins on immigration, trade, and foreign policy",
     link: "https://www.foxnews.com/video/6368256078112",
@@ -38,13 +45,43 @@ function App() {
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
+  const [responses, setResponses] = useState([]);
+
+  React.useEffect(() => {
+    const unattacher = onSnapshot(responsesCollection, function(snapshot){
+      const unrolledResponses = snapshot.docs.map(doc => {
+        return {
+          ...doc.data(),
+          id: doc.id
+        }
+      })
+      const filteredResponses = unrolledResponses.filter(obj => {
+        return selectedArticle && obj['doc_id'] == selectedArticle['id']
+      })
+      console.log(filteredResponses)
+      setResponses(filteredResponses)
+    })
+    return unattacher
+  }, [selectedArticle])
+
+  React.useEffect(() => {
+    console.log(selectedArticle)
+    if(!userInput) return;
+    addDoc(responsesCollection, {
+      'doc_id': selectedArticle['id'],
+      'agreement': agreement,
+      'comment': userInput
+    })
+  }, [userInput])
 
   const handleSend = () => {
     if (!userInput.trim()) return;
+    
     const randomResponse =
       hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
-      setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
-      setUserInput("");
+    
+    setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
+    setUserInput("");
   };
 
   return (
@@ -78,19 +115,19 @@ function App() {
               value={agreement}
               onChange={(e) => setAgreement(e.target.value)}
             />
-            <button onClick={handleSend}>Send Agreement Level</button>
             <div className="chat-thread">
               {messages.map((msg, index) => (
-                <p key={index} className={msg.sender}>{msg.text}</p>
+                <div key={index} className={`message ${msg.sender}`}>
+                  {msg.text}
+                </div>
               ))}
             </div>
             <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
-              placeholder="Share your thoughts..."
-              style={{ width: "70%" }}
+              placeholder="Respond freely here!..."
             ></textarea>
-            <button onClick={handleSend}>Send Thoughts</button>
+            <button onClick={handleSend}>Send</button>
           </div>
         </div>
       )}
