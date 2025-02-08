@@ -230,9 +230,9 @@ def readCsvRowsToArray(filePath):
             array.append(row[0]) #only one thing per row
     return array
 
-def getRandomImage(imageArray):
-    i = random.randint(0, len(imageArray)-1)
-    return imageArray[i]
+def getRandomImage(imageArray, num):
+    indices = random.sample(range(0, len(imageArray)), num) #inclusive both sides
+    return [imageArray[i] for i in indices]
 
 
 #finds common keywords within headlines across the sites, biased towards words in headlines
@@ -279,16 +279,17 @@ def writeToCsv(dictionary, idx):
     blurblength = 200
     
     images = readCsvRowsToArray(imageFilePath)
+    randomImages = getRandomImage(images, 3)
 
     dataDictionary = [{'id': '1', 'title': formatStringForCsv(dictionary["left"][idx]), 
                         'summary': formatStringForCsv(dictionary["leftblurb"][idx][:blurblength], True), 
-                        'link': dictionary["lefturl"][idx], 'image': getRandomImage(images)},
+                        'link': dictionary["lefturl"][idx], 'image':randomImages[0]},
                       {'id': '3', 'title': formatStringForCsv(dictionary["right"][idx]), 
                         'summary': formatStringForCsv(dictionary["rightblurb"][idx][:blurblength], True), 
-                        'link': dictionary["righturl"][idx], 'image': getRandomImage(images)},
+                        'link': dictionary["righturl"][idx], 'image': randomImages[1]},
                       {'id': '2', 'title': formatStringForCsv(dictionary["mid"][idx]), 
                         'summary': formatStringForCsv(dictionary["midblurb"][idx][:blurblength], True), 
-                        'link': dictionary["midurl"][idx], 'image': getRandomImage(images)}]
+                        'link': dictionary["midurl"][idx], 'image': randomImages[2]}]
     
     
     with open(fileName, 'w') as csvfile:
