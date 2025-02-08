@@ -118,20 +118,22 @@ function App() {
             Read more
           </a>
           <div className="engagement-box">
-            <div className="agreement-slider">
-              <label>Agreement Level: {agreement}%</label>
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={agreement}
-                onChange={(e) => setAgreement(e.target.value)}
-                className="styled-slider"
-                disabled={agreementSent}
-              />
-              <button onClick={handleSendAgreement} disabled={agreementSent}>Send Agreement Level</button>
-              {agreementSent && <p>Your agreement level: {agreement}%</p>}
-            </div>
+            <center>
+              <div className="agreement-box">
+                <label>Agreement Level: <span className="bold">{agreement}%</span></label>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  value={agreement}
+                  onChange={(e) => setAgreement(e.target.value)}
+                  className="styled-slider"
+                  disabled={agreementSent}
+                />
+                <button className="button" onClick={handleSendAgreement} disabled={agreementSent}>Send</button>
+              </div>
+            </center>
+            {agreementSent && <p>Your agreement level: {agreement}%</p>}
             <div className="chat-thread">
               {messages.map((msg, index) => (
                 <div key={index} className={`message ${msg.sender}`}>
