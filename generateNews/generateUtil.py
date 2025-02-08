@@ -262,6 +262,13 @@ def getCommonKeywords(dictionary, articleIndex):
     topThreeWords = [word for word, count in list(sortedWordCounts.items())[:3]]
     return topThreeWords
 
+#puts blurb in correct format for display-- remove tabs
+def formatStringForCsv(string, appendZeroes=False):
+    string = string.replace("\t", "")
+    if appendZeroes:
+        string += "..."
+    return string 
+
 #writes appropriate chosen topic to a csv file
 def writeToCsv(dictionary, idx): 
     fieldNames = ['id', 'title', 'summary', 'link', 'image']
@@ -271,25 +278,25 @@ def writeToCsv(dictionary, idx):
     
     images = readCsvRowsToArray(imageFilePath)
 
-    dataDictionary = [{'id': '1', 'title': dictionary["left"][idx], 
-                        'summary': dictionary["leftblurb"][idx][:blurblength] + '...', 
+    dataDictionary = [{'id': '1', 'title': formatStringForCsv(dictionary["left"][idx]), 
+                        'summary': formatStringForCsv(dictionary["leftblurb"][idx][:blurblength], True), 
                         'link': dictionary["lefturl"][idx], 'image': getRandomImage(images)},
-                      {'id': '3', 'title': dictionary["right"][idx], 
-                        'summary': dictionary["rightblurb"][idx][:blurblength] + '...', 
+                      {'id': '3', 'title': formatStringForCsv(dictionary["right"][idx]), 
+                        'summary': formatStringForCsv(dictionary["rightblurb"][idx][:blurblength], True), 
                         'link': dictionary["righturl"][idx], 'image': getRandomImage(images)},
-                      {'id': '2', 'title': dictionary["mid"][idx], 
-                        'summary': dictionary["midblurb"][idx][:blurblength] + '...', 
+                      {'id': '2', 'title': formatStringForCsv(dictionary["mid"][idx]), 
+                        'summary': formatStringForCsv(dictionary["midblurb"][idx][:blurblength], True), 
                         'link': dictionary["midurl"][idx], 'image': getRandomImage(images)}]
     
     
     with open(fileName, 'w') as csvfile:
-        writer = csv.DictWriter(csvfile, fieldnames = fieldNames) 
+        writer = csv.DictWriter(csvfile, fieldnames = fieldNames, delimiter='\t') 
         writer.writeheader() 
         writer.writerows(dataDictionary) 
     
     topThreeWords = getCommonKeywords(dictionary, idx)
     capitalizedWords = [word.capitalize() for word in topThreeWords]
-    formattedString = ', '.join(capitalizedWords[:-1]) + ' and ' + capitalizedWords[-1] if len(topThreeWords) > 1 else capitalizedWords[0]
+    formattedString = ', '.join(capitalizedWords[:-1]) + ' and ' + capitalizedWords[-1] + "\n"
    
     with open('commonTopic.txt', 'w') as file:
         file.write(formattedString)

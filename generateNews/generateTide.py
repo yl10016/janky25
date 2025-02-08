@@ -11,10 +11,9 @@ def generate(refresh):
         similarHeadlines = generateUtil.getSimilarHeadlines(left, right, mixed)
         generateUtil.populateBlurbs(similarHeadlines)
         generateUtil.recomputeSimilarities(similarHeadlines, threshold=0.4)
-
-        if (False):
-            with open("similarHeadlines.pkl", "wb") as f:
-                pickle.dump(similarHeadlines, f)
+        
+        with open("similarHeadlines.pkl", "wb") as f:
+            pickle.dump(similarHeadlines, f)
 
     with open("similarHeadlines.pkl", "rb") as f:
         similarHeadlines = pickle.load(f)
