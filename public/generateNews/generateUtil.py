@@ -265,6 +265,8 @@ def getCommonKeywords(dictionary, articleIndex):
 #puts blurb in correct format for display-- remove tabs
 def formatStringForCsv(string, appendZeroes=False):
     string = string.replace("\t", "")
+    string = string.replace("\n", " ")
+    string = re.sub(r'\s{2,}', ' ', string) #replace strings in a row
     if appendZeroes:
         string += "..."
     return string 
