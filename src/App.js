@@ -43,11 +43,10 @@ const hardcodedResponses = [
 function App() {
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [response, setResponses] = useState("");
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
-  const [responses, setResponses] = useState([]);
-  
-  const chatEnd = React.useRef(null);
+  const [agreementSent, setAgreementSent] = useState(false)
 
   React.useEffect(() => {
     const unattacher = onSnapshot(responsesCollection, function(snapshot){
@@ -76,9 +75,9 @@ function App() {
     })
   }, [userInput])
 
-  React.useEffect(() => {
-    chatEnd.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages])
+  const handleSendAgreement = () => {
+    setAgreementSent(true);
+  };
 
   const handleSend = () => {
     if (!userInput.trim()) return;
@@ -120,21 +119,24 @@ function App() {
               max="100"
               value={agreement}
               onChange={(e) => setAgreement(e.target.value)}
+              disabled={agreementSent}
             />
+            <button onClick={handleSendAgreement} disabled={agreementSent}>Send Agreement Level</button>
+            {agreementSent && <p>Your agreement level: {agreement}%</p>}
             <div className="chat-thread">
-              {messages.map((msg, index) => (
+              {messages.map((msg, index) => (!agreementSent &&
                 <div key={index} className={`message ${msg.sender}`}>
                   {msg.text}
                 </div>
               ))}
             </div>
-            <textarea
+            {!agreementSent && <textarea
               value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Respond freely here!..."
-            ></textarea>
-            <button onClick={handleSend}>Send</button>
-            <div ref={chatEnd} />
+              style={{ width: "100%" }}
+            ></textarea>}
+            {!agreementSent && <button onClick={handleSend}>Send Thoughts!</button>}
           </div>
         </div>
       )}
