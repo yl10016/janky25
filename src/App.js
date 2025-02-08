@@ -141,11 +141,11 @@ function App() {
       {selectedArticle && (
         <div className="news-summary">
           <h2>{selectedArticle.title}</h2>
-          <p>{selectedArticle.summary}</p>
+          <p>{selectedArticle.summary} &nbsp;
           <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer">
-            Read more
-          </a>
-          <center>
+            (read more)
+          </a></p>
+          {/* <center> */}
           <div className="engagement-box">
             <center>
               <div className="agreement-box">
@@ -179,7 +179,7 @@ function App() {
             {!agreementSent && <button className="button-2" onClick={handleSend}>Send Thoughts!</button>}
             <div ref={chatEnd} />
           </div>
-          </center>
+          {/* </center> */}
         </div>
       )}
     </div>
