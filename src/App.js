@@ -5,34 +5,13 @@ import {
 } from "firebase/firestore"
 import { responsesCollection } from "./firebase"
 
+const newsPath = "/example.csv";
+const titlePath = "/title.txt";
+
 const newsTopic = {
-  title: "Trade and Tariffs",
+  title: "Trump, Trade and Tariffs",
   description: "Description blah blah blah"
 };
-
-const newsArticles = [
-  {
-    id: 1,
-    title: "It's not over: Donald Trump could still blow up global trade",
-    summary: "Ideology, complacent markets and a need for revenue may still lead to big tariffs",
-    link: "https://www.economist.com/leaders/2025/02/06/its-not-over-donald-trump-could-still-blow-up-global-trade",
-    image: "https://www.economist.com/cdn-cgi/image/width=1424,quality=80,format=auto/content-assets/images/20250208_LDD002.jpg"
-  },
-  {
-    id: 2,
-    title: "Japanese leader tries flattering Trump in bid to avert tariffs\n",
-    summary: "Trump's meeting with Japan's prime minister ended with a tariff warning, but praise from the Japanese side eased tensions",
-    link: "https://www.washingtonpost.com/politics/2025/02/07/trump-japan-prime-minister-meeting/",
-    image: "https://www.washingtonpost.com/wp-apps/imrs.php?src=https://arc-anglerfish-washpost-prod-washpost.s3.amazonaws.com/public/72ULYKJYQO7HSKLUFQX3KPQ2PM_size-normalized.jpg"
-  },
-  {
-    id: 3,
-    title: "Trump racks up wins on tariffs, immigration, and foreign policy",
-    summary: "The 'Outnumbered' panelists discuss President Donald Trump's recent wins on immigration, trade, and foreign policy",
-    link: "https://www.foxnews.com/video/6368256078112",
-    image: "https://a57.foxnews.com/static.foxnews.com/foxnews.com/content/uploads/2025/02/1440/810/trumpsteel.png?ve=1&tl=1"
-  },
-];
 
 const hardcodedResponses = [
   "That's an interesting perspective!",
@@ -41,14 +20,27 @@ const hardcodedResponses = [
 ];
 
 function App() {
+  const [newsTopic, setNewsTopic] = useState({ title: "", description: "" });
+  const [newsArticles, setNewsArticles] = useState([]);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
   const [responses, setResponses] = useState([]);
   const [agreementSent, setAgreementSent] = useState(false);
+  const [datasetIndex, setDatasetIndex] = useState(1);
   
   const chatEnd = React.useRef(null);
+
+  React.useEffect(() => {
+    // Load topic data
+    fetch(titlePath)
+      .then(response => response.text())
+      .then(text => {
+        const [title, description] = text.split("\n");
+        setNewsTopic({ title: title.trim(), description: description.trim() });
+      });
+  }, []);
 
   React.useEffect(() => {
     const unattacher = onSnapshot(responsesCollection, function(snapshot){
@@ -89,6 +81,40 @@ function App() {
     
     setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
     setUserInput("");
+  };
+
+  React.useEffect(() => {
+    // Load CSV data
+    fetch(newsPath)
+      .then(response => response.text())
+      .then(csvText => {
+        const allArticles = parseCSV(csvText);
+        updateNewsArticles(allArticles);
+      });
+  }, [datasetIndex]);
+
+  React.useEffect(() => {
+    // Change dataset every 12 hours
+    const interval = setInterval(() => {
+      setDatasetIndex(prevIndex => prevIndex + 1);
+    }, 12 * 60 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const parseCSV = (csvText) => {
+    const rows = csvText.split("\n").slice(1);
+    return rows.map(row => {
+      const [id, title, summary, link, image] = row.split("	");
+      return { id: parseInt(id, 10), title, summary, link, image };
+    }).filter(article => article.id);
+  };
+
+  const updateNewsArticles = (allArticles) => {
+    const startId = datasetIndex * 3 - 2;
+    const filteredArticles = allArticles.filter(article =>
+      article.id >= startId && article.id < startId + 3
+    );
+    setNewsArticles(filteredArticles);
   };
 
   const handleSendAgreement = () => {
