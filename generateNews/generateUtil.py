@@ -291,7 +291,7 @@ def writeToCsv(dictionary, idx):
     capitalizedWords = [word.capitalize() for word in topThreeWords]
     formattedString = ', '.join(capitalizedWords[:-1]) + ' and ' + capitalizedWords[-1] if len(topThreeWords) > 1 else capitalizedWords[0]
    
-    with open('commonTideTopic.txt', 'w') as file:
+    with open('commonTopic.txt', 'w') as file:
         file.write(formattedString)
 
         
