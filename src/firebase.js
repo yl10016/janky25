@@ -4,13 +4,13 @@ import { getFirestore, collection } from "firebase/firestore";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAVuHJSx73ahoE3iChdEU1MnaBGfr1crQA",
-  authDomain: "tides-4e9cd.firebaseapp.com",
-  projectId: "tides-4e9cd",
-  storageBucket: "tides-4e9cd.firebasestorage.app",
-  messagingSenderId: "770702608278",
-  appId: "1:770702608278:web:e09b7111dfed0961487fb7",
-  measurementId: "G-VDSLQV9XB6"
+  apiKey: "AIzaSyC-3Mqf2dWK84Zw5cvdOKD25v_UT14B8Nw",
+  authDomain: "ebbandecho-dfc67.firebaseapp.com",
+  projectId: "ebbandecho-dfc67",
+  storageBucket: "ebbandecho-dfc67.firebasestorage.app",
+  messagingSenderId: "447048550825",
+  appId: "1:447048550825:web:4d0f30729c6a85aec41cb8",
+  measurementId: "G-DWF1T7QK4H"
 };
 
 // Initialize Firebase
