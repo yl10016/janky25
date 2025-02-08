@@ -20,10 +20,10 @@ def generate(refresh):
         similarHeadlines = pickle.load(f)
     
     #choose a headline
-    chosenIndex = random.randint(0, len(similarHeadlines))    
-    # print(similarHeadlines["left"][chosenIndex])
-    # print(similarHeadlines["right"][chosenIndex])
-    # print(similarHeadlines["mid"][chosenIndex])
+    chosenIndex = random.randint(0, len(similarHeadlines)-1)    
+    print(similarHeadlines["left"][chosenIndex])
+    print(similarHeadlines["right"][chosenIndex])
+    print(similarHeadlines["mid"][chosenIndex])
 
     generateUtil.writeToCsv(similarHeadlines, chosenIndex)
 

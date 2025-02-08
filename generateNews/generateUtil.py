@@ -109,16 +109,6 @@ def crawlHeadlines() :
     return leftHeadlines, rightHeadlines, mixedHeadlines
 
 
-#finds common keywords within headlines across the sites
-# def findCommonTopics(leftHeadlines, rightHeadlines, mixedHeadlines):
-#     words = [] * len(leftHeadlines)
-#     wordCounts = [] * len(leftHeadlines)
-#     for i in range(len(leftHeadlines)):
-#         words.append(re.findall(r'\b\w+\b', leftHeadlines[i].lower()))
-#         wordCounts.append(Counter(words[i]))
-#         print(wordCounts[i])
-
-
 def calculateCosineSimilarity(x, y):
     vectorizer = TfidfVectorizer()
     vectorizer.fit([x,y])
@@ -232,18 +222,45 @@ def recomputeSimilarities(dictionary, threshold=0.4):
     return dictionary
 
 # reads our temporary image csv file into an array
-def readImagesCsvToArray(filePath):
-    images = []
+def readCsvRowsToArray(filePath):
+    array = []
     with open(filePath, 'r') as file:
         csv_reader = csv.reader(file)
         for row in csv_reader:
-            images.append(row)
-
-    return images
+            array.append(row[0]) #only one thing per row
+    return array
 
 def getRandomImage(imageArray):
-    i = random.randint(0, len(imageArray))
+    i = random.randint(0, len(imageArray)-1)
     return imageArray[i]
+
+
+#finds common keywords within headlines across the sites, biased towards words in headlines
+def getCommonKeywords(dictionary, articleIndex):
+    stopWords = readCsvRowsToArray('englishStopWords.csv')
+    blacklistedWords = readCsvRowsToArray('blacklistedWords.csv')
+    words = []
+    #count words in blurb + heading
+    countWords = dictionary["leftblurb"][articleIndex] 
+    countWords += " " + dictionary["rightblurb"][articleIndex] 
+    countWords += " " + dictionary["midblurb"][articleIndex] 
+    
+    words.extend(re.findall(r'\b\w+\b', countWords.lower())) 
+    wordCounts = Counter(words)
+
+    # bias towards words in headline
+    headlineBoost = 2  # Boost factor for headline words
+    headlines = dictionary["left"][articleIndex] + " " + dictionary["right"][articleIndex] + " " + dictionary["mid"][articleIndex]
+    for word in headlines:
+        wordCounts[word] += headlineBoost
+
+    #filter stop words out of the running
+    filteredWordCounts = {key: value for key, value in wordCounts.items() 
+                          if key not in stopWords and key not in blacklistedWords and len(key) > 1 }
+    sortedWordCounts = dict(sorted(filteredWordCounts.items(), key=lambda item: item[1], reverse=True))
+    # topThreeWords = list(sortedWordCounts.items())[:3]
+    topThreeWords = [word for word, count in list(sortedWordCounts.items())[:3]]
+    return topThreeWords
 
 #writes appropriate chosen topic to a csv file
 def writeToCsv(dictionary, idx): 
@@ -252,20 +269,29 @@ def writeToCsv(dictionary, idx):
     imageFilePath = 'randomImages.csv'
     blurblength = 200
     
-    images = readImagesCsvToArray(imageFilePath)
+    images = readCsvRowsToArray(imageFilePath)
 
-    dataDictionary = [{'id': 'l', 'title': dictionary["left"][idx], 
+    dataDictionary = [{'id': '1', 'title': dictionary["left"][idx], 
                         'summary': dictionary["leftblurb"][idx][:blurblength] + '...', 
                         'link': dictionary["lefturl"][idx], 'image': getRandomImage(images)},
-                      {'id': 'r', 'title': dictionary["right"][idx], 
+                      {'id': '3', 'title': dictionary["right"][idx], 
                         'summary': dictionary["rightblurb"][idx][:blurblength] + '...', 
                         'link': dictionary["righturl"][idx], 'image': getRandomImage(images)},
-                      {'id': 'm', 'title': dictionary["mid"][idx], 
+                      {'id': '2', 'title': dictionary["mid"][idx], 
                         'summary': dictionary["midblurb"][idx][:blurblength] + '...', 
                         'link': dictionary["midurl"][idx], 'image': getRandomImage(images)}]
-    # print(dummyDictionary)
+    
+    
     with open(fileName, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames = fieldNames) 
         writer.writeheader() 
         writer.writerows(dataDictionary) 
+    
+    topThreeWords = getCommonKeywords(dictionary, idx)
+    capitalizedWords = [word.capitalize() for word in topThreeWords]
+    formattedString = ', '.join(capitalizedWords[:-1]) + ' and ' + capitalizedWords[-1] if len(topThreeWords) > 1 else capitalizedWords[0]
+   
+    with open('commonTideTopic.txt', 'w') as file:
+        file.write(formattedString)
+
         
