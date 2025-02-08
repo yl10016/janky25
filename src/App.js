@@ -57,16 +57,6 @@ function App() {
   }, [selectedArticle])
 
   React.useEffect(() => {
-    console.log(selectedArticle)
-    if(!userInput) return;
-    addDoc(responsesCollection, {
-      'doc_id': selectedArticle['id'],
-      'agreement': agreement,
-      'comment': userInput
-    })
-  }, [userInput])
-
-  React.useEffect(() => {
     chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);  
 
