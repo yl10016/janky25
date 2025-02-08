@@ -33,6 +33,7 @@ def generate(refresh):
     #     print(similarHeadlines["mid"][i])
     #     print(similarHeadlines["similarity"][i])
     #     print()
+
     # print(f":{similarHeadlines["similarity"]}")
 
 
