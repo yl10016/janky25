@@ -86,16 +86,6 @@ def crawlHeadlines() :
             mixedHeadlines["text"] += headline_text
             mixedHeadlines["url"] += headline_link
 
-
-    # print(len(leftHeadlines["text"]))
-    # print(len(leftHeadlines["url"]))
-
-    # print(len(rightHeadlines["text"]))
-    # print(len(rightHeadlines["url"]))
-
-    # print(len(mixedHeadlines["text"]))
-    # print(len(mixedHeadlines["url"]))
-
     return leftHeadlines, rightHeadlines, mixedHeadlines
 
 
