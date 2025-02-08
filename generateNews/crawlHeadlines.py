@@ -3,7 +3,9 @@ from collections import Counter
 
 import urllib.request
 import re 
+import csv
 
+#for cosine similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -50,6 +52,7 @@ def crawlHeadlines() :
 
             # get headlines
             soup = BeautifulSoup(html, 'html.parser')
+            # print(soup.prettify())
             headline_text = []
             headline_link = []
 
@@ -62,6 +65,20 @@ def crawlHeadlines() :
                     # Extract the link inside the <a> tag (if it exists)
                     headline_text.append(headline.get_text().strip())
                     headline_link.append(link['href'])
+            
+            # for h3 in soup.find_all('article'):
+            #     print(h3.text, h3.get('class'))
+            
+            # links = soup.find_all(entry["htmllink"], class_=entry["htmlclass"]) #find all links
+            # # Find all headlines by searching for <h3> tags with the class "title"
+            # # print(len(links))
+            # for link in links: 
+            #     headline = link.find('a') # if <a> is contained within the <href> things instead
+
+            #     if headline: 
+            #         # Extract the link inside the <a> tag (if it exists)
+            #         headline_text.append(headline.get_text().strip())
+            #         headline_link.append(headline['href'])
 
             
             # for additional json stored in <scripts> within the html
@@ -86,6 +103,9 @@ def crawlHeadlines() :
             mixedHeadlines["text"] += headline_text
             mixedHeadlines["url"] += headline_link
 
+    # print(f":{leftHeadlines["text"]}")
+    # print(f":{rightHeadlines["text"]}")
+    # print(f":{mixedHeadlines["text"]}")
     return leftHeadlines, rightHeadlines, mixedHeadlines
 
 
@@ -109,34 +129,127 @@ def calculateCosineSimilarity(x, y):
 
     return similarity
 
+def calculateThreewaySimilarity(l, r, m, useMinimum=True):
+    similaritymr = calculateCosineSimilarity(m,r)
+    similarityrl = calculateCosineSimilarity(r,l)
+    similarityml = calculateCosineSimilarity(m,l)
+
+    if useMinimum:
+        threeWaySimilarity = min(similarityml, similaritymr, similarityrl)
+    else:
+        threeWaySimilarity = (similaritymr + similarityrl + similarityml) / 3
+
+    return threeWaySimilarity
+
 # preliminary matching of headlines using cosine similarity between the headline words
 def getSimilarHeadlines(leftHeadlines, rightHeadlines, mixedHeadlines, threshold = 0.12):
-    similarHeadlines = {"left": [], "right": [], "mid": [], "similarity": []}
-
-    for m in mixedHeadlines:
-        for r in rightHeadlines:
-            for l in leftHeadlines:
+    similarHeadlines = {"left": [], "lefturl": [], "leftblurb": [],
+                        "right": [], "righturl": [], "rightblurb": [],
+                        "mid": [], "midurl": [], "midblurb": [],
+                        "similarity": []}
+    for midx in range(len(mixedHeadlines["text"])):
+        for ridx in range(len(rightHeadlines["text"])):
+            for lidx in range(len(leftHeadlines["text"])):
                 #calulate three-way cosine similarity
-                similaritymr = calculateCosineSimilarity(m,r)
-                similarityrl = calculateCosineSimilarity(r,l)
-                similarityml = calculateCosineSimilarity(m,l)
+                m = mixedHeadlines["text"][midx]
+                r = rightHeadlines["text"][ridx]
+                l = leftHeadlines["text"][lidx]
 
-                threeWaySimilarity = (similaritymr + similarityrl + similarityml) / 3
-                threeWaySimilarity = min(similarityml, similaritymr, similarityrl)
+                threeWaySimilarity = calculateThreewaySimilarity(l, r, m, useMinimum=True)
                 
-                if (threeWaySimilarity > threshold):
-                    similarHeadlines["left"].append(l)
-                    similarHeadlines["right"].append(r)
+                if (threeWaySimilarity > threshold):             
                     similarHeadlines["mid"].append(m)
+                    similarHeadlines["midurl"].append(mixedHeadlines["url"][midx])
+                    similarHeadlines["right"].append(r)
+                    similarHeadlines["righturl"].append(rightHeadlines["url"][ridx])
+                    similarHeadlines["left"].append(l)
+                    similarHeadlines["lefturl"].append(leftHeadlines["url"][lidx])
                     similarHeadlines["similarity"].append(threeWaySimilarity)
 
-    print(similarHeadlines)
+    # print(similarHeadlines)
     return similarHeadlines
 
-                
-        
-            
 
+#do another iteration of this? but reading like the first x amount of words in the article       
+
+# populates dictionary of given index for all three news articles with the content of the news article      
+# NOTE: assumes same length for all three 
+def populateBlurbsIdx(headline, idx):
+    urlArray = [headline["lefturl"][idx], headline["righturl"][idx], headline["midurl"][idx]]
+    for i in range(3):
+        url = urlArray[i]
+
+        req = urllib.request.Request(url, headers={
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
+            'Accept-Language': 'en-US,en;q=0.9'})
+                
+        # read the webpage in as an html
+        response = urllib.request.urlopen(req)
+
+        html_bytes = response.read()
+        html = html_bytes.decode("utf-8")
+
+        soup = BeautifulSoup(html, 'html.parser')
+        article = ""
+        paragraphs = soup.find_all('p')  # Find all paragraph tags
+        for p in paragraphs:
+            article += " " + p.get_text(strip=True)  # Extract and print the text content    
+
+        if i == 0: 
+            headline["leftblurb"].append(article)
+        elif i == 1:
+            headline["rightblurb"].append(article) 
+        else:
+            headline["midblurb"].append(article)   
+
+#populates all idx in dictionary with news article  
+def populateBlurbs(headline):
+    print(len(headline["left"]))
+    for i in range(len(headline["left"])):
+        populateBlurbsIdx(headline, i)
 
     #randomized rate limiting when crawling
 
+#overwrite headline similarities with similarities from the actual article
+def recomputeSimilarities(dictionary, threshold=0.4):
+    for idx in range(len(dictionary["left"])):
+        #calulate three-way cosine similarity
+        m = dictionary["midblurb"][idx]
+        r = dictionary["rightblurb"][idx]
+        l = dictionary["leftblurb"][idx]
+
+        threeWaySimilarity = calculateThreewaySimilarity(l, r, m, useMinimum=False)
+          
+        dictionary["similarity"][idx] = threeWaySimilarity
+    
+    # delete entries that are below threshold
+    i = 0
+    while i < len(dictionary["left"]):
+        if dictionary["similarity"][i] < threshold:
+            for k in dictionary.keys():
+                del dictionary[k][i]
+        else:
+            i += 1
+    
+    return dictionary
+
+#writes appropriate chosen topic to a csv file
+def writeToCsv(dictionary, idx): 
+    fieldNames = ['id', 'title', 'summary', 'link', 'image']
+    fileName = 'generatedTide.csv'
+    blurblength = 200
+    dataDictionary = [{'id': 'l', 'title': dictionary["left"][idx], 
+                        'summary': dictionary["leftblurb"][idx][:blurblength] + '...', 
+                        'link': dictionary["lefturl"][idx], 'image': ''},
+                      {'id': 'r', 'title': dictionary["right"][idx], 
+                        'summary': dictionary["rightblurb"][idx][:blurblength] + '...', 
+                        'link': dictionary["righturl"][idx], 'image': ''},
+                      {'id': 'm', 'title': dictionary["mid"][idx], 
+                        'summary': dictionary["midblurb"][idx][:blurblength] + '...', 
+                        'link': dictionary["midurl"][idx], 'image': ''}]
+    # print(dummyDictionary)
+    with open(fileName, 'w') as csvfile:
+        writer = csv.DictWriter(csvfile, fieldnames = fieldNames) 
+        writer.writeheader() 
+        writer.writerows(dataDictionary) 
+        
