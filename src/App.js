@@ -6,12 +6,7 @@ import {
 import { responsesCollection } from "./firebase"
 
 const newsPath = "/generateNews/generatedTide.csv";
-const titlePath = "/title.txt";
-
-const newsTopic = {
-  title: "Trump, Trade and Tariffs",
-  description: "Description blah blah blah"
-};
+const titlePath = "/generateNews/commonTopic.txt";
 
 const hardcodedResponses = [
   "That's an interesting perspective!",
@@ -73,22 +68,32 @@ function App() {
     chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages]);  
 
+  function addResponse(){
+    addDoc(responsesCollection, {
+      'doc_id': selectedArticle['id'],
+      'agreement': agreement,
+      'comment': userInput
+    })
+  }
+ 
   const handleSend = () => {
     if (!userInput.trim()) return;
-    
+   
     const agreementOppLo = (agreement + 50) % 100 - 10
     const agreementOppHi = (agreement + 50) % 100 + 10
     const filteredResponses = responses.filter(obj => {
       return agreementOppLo <= obj['agreement'] && obj['agreement'] <= agreementOppHi
     })
     var randomResponse = filteredResponses[Math.floor(Math.random() * filteredResponses.length)];
-    
+   
     if(!randomResponse){
       randomResponse = hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
     }
 
+
     setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse['comment'], sender: "bot" }]);
     setUserInput("");
+    addResponse();
   };
 
   React.useEffect(() => {
@@ -112,7 +117,7 @@ function App() {
   const parseCSV = (csvText) => {
     const rows = csvText.split("\n").slice(1);
     return rows.map(row => {
-      const [id, title, summary, link, image] = row.split(",");
+      const [id, title, summary, link, image] = row.split("	");
       return { id: parseInt(id, 10), title, summary, link, image };
     }).filter(article => article.id);
   };
@@ -147,7 +152,7 @@ function App() {
           </div>
         ))}
       </div>
-      <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer">
+      <a href={selectedArticle['link']} target="_blank" rel="noopener noreferrer">
             (read more)
           </a>
       {selectedArticle && (
@@ -179,7 +184,7 @@ function App() {
             </div>
             {!agreementSent && <textarea
               className="styled-textarea"
-              value={userInput} 
+              value={userInput}
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Respond freely here!..."
             ></textarea>}
@@ -187,9 +192,12 @@ function App() {
             <div ref={chatEnd} />
             <div className="news-list" style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
               {newsArticles.map((article, index) => (
-                <div key={index} className="news-item" onClick={() => setSelectedArticle(article)}>
+                <div key={index} className="news-item">
                   <h3>{article.title}</h3>
                   <img src={article.image} alt={article.title} className="news-image" />
+                  <a href={article.link} target="_blank" rel="noopener noreferrer">
+            (read more)
+          </a>
                 </div>
               ))}
           </div>
