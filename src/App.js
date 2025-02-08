@@ -71,12 +71,16 @@ function App() {
   const handleSend = () => {
     if (!userInput.trim()) return;
    
-    const agreementOppLo = agreement==50? 40: ((agreement + 50) % 100 - 10)
-    const agreementOppHi = agreement==50? 60: ((agreement + 50) % 100 + 10)
+    const agreementOppLo = (agreement + 50) % 100 - 10
+    const agreementOppHi = (agreement + 50) % 100 + 10
 
 
     const filteredResponses = responses.filter(obj => {
-      return agreementOppLo <= obj['agreement'] && obj['agreement'] <= agreementOppHi
+      return (agreement == 50 && (0 <= obj['agreement'] && obj['agreement'] <= 20 ||
+                                 80 <= obj['agreement'] && obj['agreement'] <= 100
+                                 )
+             ) || (agreement != 50 &&
+      agreementOppLo <= obj['agreement'] && obj['agreement'] <= agreementOppHi)
     })
     var randomResponse = filteredResponses[Math.floor(Math.random() * filteredResponses.length)];
     while(seenResponses.includes(randomResponse)){
@@ -92,6 +96,7 @@ function App() {
     setUserInput("");
     addResponse();
   };
+
 
   React.useEffect(() => {
     // Load CSV data
