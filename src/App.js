@@ -5,7 +5,7 @@ import {
 } from "firebase/firestore"
 import { responsesCollection } from "./firebase"
 
-const newsPath = "/example.csv";
+const newsPath = "/generateNews/generatedTide.csv";
 const titlePath = "/title.txt";
 
 const newsTopic = {
@@ -22,7 +22,7 @@ const hardcodedResponses = [
 function App() {
   const [newsTopic, setNewsTopic] = useState({ title: "", description: "" });
   const [newsArticles, setNewsArticles] = useState([]);
-  const [selectedArticle, setSelectedArticle] = useState(null);
+  const [selectedArticle, setSelectedArticle] = useState({'link': 'a'});
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
   const [agreement, setAgreement] = useState(50);
@@ -51,7 +51,7 @@ function App() {
         }
       })
       const filteredResponses = unrolledResponses.filter(obj => {
-        return selectedArticle && obj['doc_id'] == selectedArticle['id']
+        return selectedArticle && obj['comment'] && obj['doc_id'] == selectedArticle['id']
       })
       console.log(filteredResponses)
       setResponses(filteredResponses)
@@ -70,16 +70,24 @@ function App() {
   }, [userInput])
 
   React.useEffect(() => {
-    chatEnd.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages])
+    chatEnd.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+  }, [messages]);  
 
   const handleSend = () => {
     if (!userInput.trim()) return;
     
-    const randomResponse =
-      hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
+    const agreementOppLo = (agreement + 50) % 100 - 10
+    const agreementOppHi = (agreement + 50) % 100 + 10
+    const filteredResponses = responses.filter(obj => {
+      return agreementOppLo <= obj['agreement'] && obj['agreement'] <= agreementOppHi
+    })
+    var randomResponse = filteredResponses[Math.floor(Math.random() * filteredResponses.length)];
     
-    setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse, sender: "bot" }]);
+    if(!randomResponse){
+      randomResponse = hardcodedResponses[Math.floor(Math.random() * hardcodedResponses.length)];
+    }
+
+    setMessages([...messages, { text: userInput, sender: "user" }, { text: randomResponse['comment'], sender: "bot" }]);
     setUserInput("");
   };
 
@@ -104,7 +112,7 @@ function App() {
   const parseCSV = (csvText) => {
     const rows = csvText.split("\n").slice(1);
     return rows.map(row => {
-      const [id, title, summary, link, image] = row.split("	");
+      const [id, title, summary, link, image] = row.split(",");
       return { id: parseInt(id, 10), title, summary, link, image };
     }).filter(article => article.id);
   };
@@ -115,6 +123,7 @@ function App() {
       article.id >= startId && article.id < startId + 3
     );
     setNewsArticles(filteredArticles);
+    setSelectedArticle(filteredArticles[Math.floor(Math.random() * filteredArticles.length)])
   };
 
   const handleSendAgreement = () => {
@@ -132,19 +141,17 @@ function App() {
       </div>
       <div className="news-list" style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
         {newsArticles.map((article, index) => (
-          <div key={index} className="news-item" onClick={() => setSelectedArticle(article)}>
+          article['id'] == selectedArticle['id'] && <div key={index} className="news-item-1" onClick={() => setSelectedArticle(article)}>
             <h3>{article.title}</h3>
             <img src={article.image} alt={article.title} className="news-image" />
           </div>
         ))}
       </div>
+      <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer">
+            (read more)
+          </a>
       {selectedArticle && (
         <div className="news-summary">
-          <h2>{selectedArticle.title}</h2>
-          <p>{selectedArticle.summary} &nbsp;
-          <a href={selectedArticle.link} target="_blank" rel="noopener noreferrer">
-            (read more)
-          </a></p>
           {/* <center> */}
           <div className="engagement-box">
             <center>
@@ -162,7 +169,7 @@ function App() {
                 <button className="button" onClick={handleSendAgreement} disabled={agreementSent}>Send</button>
               </div>
             </center>
-            {agreementSent && <p>Your agreement level: {agreement}%</p>}
+            {agreementSent && <div className="agreement-res"> <p>Your agreement level: {agreement}%</p></div>}
             <div className="chat-thread">
               {messages.map((msg, index) => (
                 <div key={index} className={`message ${msg.sender}`}>
@@ -172,12 +179,20 @@ function App() {
             </div>
             {!agreementSent && <textarea
               className="styled-textarea"
-              value={userInput}
+              value={userInput} 
               onChange={(e) => setUserInput(e.target.value)}
               placeholder="Respond freely here!..."
             ></textarea>}
             {!agreementSent && <button className="button-2" onClick={handleSend}>Send Thoughts!</button>}
             <div ref={chatEnd} />
+            <div className="news-list" style={{ display: "flex", justifyContent: "space-around", width: "100%" }}>
+              {newsArticles.map((article, index) => (
+                <div key={index} className="news-item" onClick={() => setSelectedArticle(article)}>
+                  <h3>{article.title}</h3>
+                  <img src={article.image} alt={article.title} className="news-image" />
+                </div>
+              ))}
+          </div>
           </div>
           {/* </center> */}
         </div>
