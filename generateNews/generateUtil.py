@@ -4,6 +4,7 @@ from collections import Counter
 import urllib.request
 import re 
 import csv
+import random
 
 #for cosine similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -32,7 +33,6 @@ def crawlHeadlines() :
     rightHeadlines = {"text": [], "url": []}
     mixedHeadlines = {"text": [], "url": []}
 
-    # for side in [leftWingSites, mixedSites, rightWingSites]:
     for side in [leftWingSites, mixedSites, rightWingSites]:
         for entry in side:
             # create a request so we don't look like a python script but like a real browser
@@ -208,8 +208,6 @@ def populateBlurbs(headline):
     for i in range(len(headline["left"])):
         populateBlurbsIdx(headline, i)
 
-    #randomized rate limiting when crawling
-
 #overwrite headline similarities with similarities from the actual article
 def recomputeSimilarities(dictionary, threshold=0.4):
     for idx in range(len(dictionary["left"])):
@@ -233,20 +231,38 @@ def recomputeSimilarities(dictionary, threshold=0.4):
     
     return dictionary
 
+# reads our temporary image csv file into an array
+def readImagesCsvToArray(filePath):
+    images = []
+    with open(filePath, 'r') as file:
+        csv_reader = csv.reader(file)
+        for row in csv_reader:
+            images.append(row)
+
+    return images
+
+def getRandomImage(imageArray):
+    i = random.randint(0, len(imageArray))
+    return imageArray[i]
+
 #writes appropriate chosen topic to a csv file
 def writeToCsv(dictionary, idx): 
     fieldNames = ['id', 'title', 'summary', 'link', 'image']
     fileName = 'generatedTide.csv'
+    imageFilePath = 'randomImages.csv'
     blurblength = 200
+    
+    images = readImagesCsvToArray(imageFilePath)
+
     dataDictionary = [{'id': 'l', 'title': dictionary["left"][idx], 
                         'summary': dictionary["leftblurb"][idx][:blurblength] + '...', 
-                        'link': dictionary["lefturl"][idx], 'image': ''},
+                        'link': dictionary["lefturl"][idx], 'image': getRandomImage(images)},
                       {'id': 'r', 'title': dictionary["right"][idx], 
                         'summary': dictionary["rightblurb"][idx][:blurblength] + '...', 
-                        'link': dictionary["righturl"][idx], 'image': ''},
+                        'link': dictionary["righturl"][idx], 'image': getRandomImage(images)},
                       {'id': 'm', 'title': dictionary["mid"][idx], 
                         'summary': dictionary["midblurb"][idx][:blurblength] + '...', 
-                        'link': dictionary["midurl"][idx], 'image': ''}]
+                        'link': dictionary["midurl"][idx], 'image': getRandomImage(images)}]
     # print(dummyDictionary)
     with open(fileName, 'w') as csvfile:
         writer = csv.DictWriter(csvfile, fieldnames = fieldNames) 
