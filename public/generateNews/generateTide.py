@@ -23,5 +23,5 @@ def generate(refresh):
     generateUtil.writeToCsv(similarHeadlines, chosenIndex)
 
 # run pipeline with a call to generate
-while True:
-    generate(True)
+# while True:
+generate(True)
