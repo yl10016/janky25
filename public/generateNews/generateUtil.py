@@ -164,7 +164,6 @@ def populateBlurbsIdx(headline, idx):
 
 #populates all idx in dictionary with news article  
 def populateBlurbs(headline):
-    print(len(headline["left"]))
     for i in range(len(headline["left"])):
         populateBlurbsIdx(headline, i)
 
@@ -207,8 +206,8 @@ def getRandomImage(imageArray, num):
 
 #finds common keywords within headlines across the sites, biased towards words in headlines
 def getCommonKeywords(dictionary, articleIndex):
-    stopWords = readCsvRowsToArray('englishStopWords.csv')
-    blacklistedWords = readCsvRowsToArray('blacklistedWords.csv')
+    stopWords = readCsvRowsToArray('public/generateNews/englishStopWords.csv')
+    blacklistedWords = readCsvRowsToArray('public/generateNews/blacklistedWords.csv')
     words = []
     #count words in blurb + heading
     countWords = dictionary["leftblurb"][articleIndex] 
@@ -244,8 +243,8 @@ def formatStringForCsv(string, appendZeroes=False):
 #writes appropriate chosen topic to a csv file
 def writeToCsv(dictionary, idx): 
     fieldNames = ['id', 'title', 'summary', 'link', 'image']
-    fileName = 'generatedTide.csv'
-    imageFilePath = 'randomImages.csv'
+    fileName = 'public/generateNews/generatedTide.csv'
+    imageFilePath = 'public/generateNews/randomImages.csv'
     blurblength = 200
     
     images = readCsvRowsToArray(imageFilePath)
@@ -271,5 +270,5 @@ def writeToCsv(dictionary, idx):
     capitalizedWords = [word.capitalize() for word in topThreeWords]
     formattedString = ', '.join(capitalizedWords[:-1]) + ' and ' + capitalizedWords[-1] + "\n"
    
-    with open('commonTopic.txt', 'w') as file:
+    with open('public/generateNews/commonTopic.txt', 'w') as file:
         file.write(formattedString)

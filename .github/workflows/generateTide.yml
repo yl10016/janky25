@@ -1,0 +1,36 @@
+name: Generate new tide every 12 hours
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # This runs the workflow every 12 hours (UTC)
+  workflow_dispatch:  # Allows manual trigger as well (for testing)
+
+jobs:
+  generate_tide:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+      
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r .github/workflows/requirements.txt  # If you have additional dependencies, update in requirements.txt
+      
+    - name: Run Python Script
+      run: python public/generateNews/generateTide.py  # Replace with the command to run your Python script
+    
+    - name: Commit and push changes
+      run: |
+        git config --global user.name "zq768"
+        git config --global user.email "z.nicolezhang@gmail.com"
+        git add public/generateNews/generatedTide.csv  
+        git add public/generateNews/commonTopic.txt  
+        git commit -m "Automated update: New Tide Generation"
+        git push
